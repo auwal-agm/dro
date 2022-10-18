@@ -19,7 +19,7 @@ export default function BooksComponent() {
   const getBooks =  useCallback(async () => {
     if (!isLastPage) {
       const response = await axios.get(
-        `https://www.anapioficeandfire.com/api/books?page=${page}&pageSize=10`
+        `https://www.anapioficeandfire.com/api/books?page=${page}&pageSize=30`
       )
       let temChar:any[] = [];
       let tempResult = await response.data.map((data: any)=>{
