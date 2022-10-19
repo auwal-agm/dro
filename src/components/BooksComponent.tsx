@@ -100,13 +100,13 @@ export default function BooksComponent() {
     }
   },[search, booksCollection])
 
-  useEffect(() => {
-    window.addEventListener('scroll', infiniteScroll)
+  // useEffect(() => {
+  //   window.addEventListener('scroll', infiniteScroll)
 
-    return () => {
-      window.removeEventListener('scroll', infiniteScroll)
-    }
-  }, [infiniteScroll])
+  //   return () => {
+  //     window.removeEventListener('scroll', infiniteScroll)
+  //   }
+  // }, [infiniteScroll])
 
   return (
     <>
