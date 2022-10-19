@@ -14,5 +14,5 @@ export default interface Book {
     released: string,
     characters: string[],
     povCharacters:string[],
-    charactersNames: any
+    charactersDetail: any
 }

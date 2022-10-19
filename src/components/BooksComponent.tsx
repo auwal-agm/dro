@@ -23,7 +23,7 @@ export default function BooksComponent() {
       )
       let temChar:any[] = [];
       let tempResult = await response.data.map((data: any)=>{
-        return {...data, charactersNames: []}
+        return {...data, charactersDetail: []}
       });
       let tempBooks:any[] = [];
       await response.data.forEach(async(dt:Book, index: number)=>{
@@ -31,22 +31,25 @@ export default function BooksComponent() {
           if (!temChar[url]) {
             let tet =  await getCharacter(url)
             temChar[url] = tet   
-            tempResult[index] = {...dt, charactersNames: [...tempResult[index].charactersNames, tet]}
+            tempResult[index] = {...dt, charactersDetail: [...tempResult[index].charactersDetail, tet]}
           }else{
-            tempResult[index] = {...dt, charactersNames: [...tempResult[index].charactersNames, temChar[url]]}
+            tempResult[index] = {...dt, charactersDetail: [...tempResult[index].charactersDetail, temChar[url]]}
           } 
         })
       })
       await tempBooks.push(tempResult);
-      
-      setBooks(tempBooks[0]);
-      setBooksCollections(tempBooks[0]);
-      // setBooks((prevBooks)=>{
-      //   console.log('prevBooks: ', prevBooks);
-      //         return [...prevBooks, ...tempResult] 
+      if(tempBooks.length > 0){
+        setBooks(tempBooks[0]);
+        setBooksCollections(tempBooks[0]);
+      }
+      // setBooks([...booksCollection, ...tempBooks[0]]);
+      // setBooksCollections([...booksCollection, ...tempBooks[0]]);
+
+      // await setBooks((prevBooks)=>{
+      //   return [...prevBooks, ...tempBooks[0]] 
       // })
-      // setBooksCollections((prevBooks)=>{
-      //         return [...prevBooks, ...tempResult] 
+      // await setBooksCollections((prevBooks)=>{
+      //   return [...prevBooks, ...tempBooks[0]] 
       // })
       if (response?.data?.length === 0) {
         setIsLastpage(true)
@@ -59,7 +62,7 @@ export default function BooksComponent() {
   const infiniteScroll = useCallback(()=> {
     const scrollDifference = (document.documentElement.offsetHeight) - (window.innerHeight + document.documentElement.scrollTop);
     //if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight){
-    if(scrollDifference < 100 || !isLastPage){
+    if(scrollDifference < 100 && !isLastPage){
       let newPage = page + 1;
       setPage(newPage);
       getBooks();
@@ -74,20 +77,26 @@ export default function BooksComponent() {
   useEffect(()=>{
     if (search.length) {
       const filteredBooks= booksCollection.filter(function(book) {
-        for (let i = 0; i < book?.charactersNames?.length; i++) {
-          const character = book?.charactersNames[i];
-          if (book?.authors[0]?.toLowerCase().includes(search.toLowerCase()) 
-              || book?.publisher?.toLowerCase().includes(search.toLowerCase()) 
-              || book?.isbn?.toLowerCase().includes(search.toLowerCase()) 
-              || book?.name?.toLowerCase().includes(search.toLowerCase()) 
-              || book?.released?.toLowerCase().includes(search.toLowerCase())
-              || character?.name?.toLowerCase().includes(search.toLowerCase())){
+        const otherSearchStatus = book?.authors[0]?.toLowerCase().includes(search.toLowerCase()) 
+                                || book?.publisher?.toLowerCase().includes(search.toLowerCase()) 
+                                || book?.isbn?.toLowerCase().includes(search.toLowerCase()) 
+                                || book?.name?.toLowerCase().includes(search.toLowerCase()) 
+                                || book?.released?.toLowerCase().includes(search.toLowerCase());
+        for (let i = 0; i < book?.charactersDetail?.length; i++) {
+          const character = book?.charactersDetail[i];
+          if (
+              otherSearchStatus
+              || character?.name?.toLowerCase().includes(search.toLowerCase())
+              || character?.culture?.toLowerCase().includes(search.toLowerCase())
+            ){
             return true;
           }
         }
         return false;
       });
       setBooks(filteredBooks);
+    } else {
+      setBooks(booksCollection);
     }
   },[search, booksCollection])
 
